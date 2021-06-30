@@ -56,6 +56,18 @@ public class CalcItemsHolder extends Activity {
         saveItemsList(this.items);
     }
 
+    public boolean checkIfCalcExists(long number)
+    {
+        for (CalcItem item: this.items)
+        {
+            if (item.numToCalc == number)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 }

@@ -1,9 +1,13 @@
 package com.example.post_pc_ex8;
 
+import android.widget.TextView;
+
 import java.io.Serializable;
+import java.util.UUID;
 
 public class CalcItem implements Comparable<CalcItem>, Serializable {
 
+    public UUID WorkerId;
     long numToCalc;
     long root1;
     long root2;
@@ -18,6 +22,10 @@ public class CalcItem implements Comparable<CalcItem>, Serializable {
         this.progress = 0;
         this.root1 = -1;
         this.root2 = -1;
+    }
+
+    public UUID getGetWorkerId() {
+        return this.WorkerId;
     }
 
     public void setPrime(boolean prime) {
@@ -94,5 +102,23 @@ public class CalcItem implements Comparable<CalcItem>, Serializable {
         }
 
         return -1;
+    }
+
+    public String getCalcDetails() {
+        if (!this.getStatus().equals("finished"))
+        {
+            return "Calculating Roots for:" + this.numToCalc;
+        }
+
+        else
+            if (this.isPrime)
+        {
+            return this.numToCalc + "is prime!";
+        }
+            else
+        {
+            return this.numToCalc + ": " + this.root1 + " x " + this.root2;
+        }
+
     }
 }
