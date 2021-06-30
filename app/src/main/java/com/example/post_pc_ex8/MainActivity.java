@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Collections;
+
 import static android.widget.LinearLayout.VERTICAL;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        this.builder = new Data.Builder();
         this.insertCalc = findViewById(R.id.insertCalc);
         this.addCalcButton = findViewById(R.id.newCalcButton);
         this.recycler = findViewById(R.id.recyclerCalcItem);
@@ -90,7 +92,42 @@ public class MainActivity extends AppCompatActivity {
         LiveData<WorkInfo> info = WorkManager.getInstance(getApplicationContext()).getWorkInfoByIdLiveData(request.getId());
         info.observeForever(v ->
         {
-
+            if (v != null)
+            {
+                WorkInfo.State state = v.getState();
+                Data data = v.getOutputData();
+                int progress = data.getInt("progress", 0);
+                if (state == WorkInfo.State.SUCCEEDED)
+                {
+                    item.setRoot1(data.getLong("root1", 0));
+                    item.setRoot1(data.getLong("root2", 0));
+                    item.setStatus("finished");
+                    item.setProgress(100);
+                    Collections.sort(holder.items);
+                    holder.saveItemsList(holder.items);
+                    adapter.notifyDataSetChanged();
+                    CalcViewHolder calcView = (CalcViewHolder) recycler.findViewHolderForLayoutPosition(holder.items.indexOf(item));
+                    if (calcView != null)
+                    {
+                        calcView.setCalcCompleted(item);
+                    }
+                }
+                else
+                {
+                    boolean isPrime = data.getBoolean("isPrime", false);
+                    if (isPrime)
+                    {
+                        adapter.notifyDataSetChanged();
+                        item.setPrime(true);
+                        holder.saveItemsList(holder.items);
+                        CalcViewHolder calcView = (CalcViewHolder) recycler.findViewHolderForLayoutPosition(holder.items.indexOf(item));
+                        if (calcView != null)
+                        {
+                            calcView.setCalcCompleted(item);
+                        }
+                    }
+                }
+            }
         });
 
     }
