@@ -1,10 +1,13 @@
 package com.example.post_pc_ex8;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import android.os.Bundle;
@@ -32,9 +35,10 @@ public class MainActivity extends AppCompatActivity {
         this.insertCalc = findViewById(R.id.insertCalc);
         this.addCalcButton = findViewById(R.id.newCalcButton);
         this.recycler = findViewById(R.id.recyclerCalcItem);
-        this.adapter = new CalcAdapter(WorkManager.getInstance(MainActivity.this) ,this.holder);
         this.holder = new CalcItemsHolder(MainActivity.this);
         this.holder.initCalcList();
+        this.adapter = new CalcAdapter(WorkManager.getInstance(MainActivity.this) ,this.holder);
+
 
         this.recycler.setAdapter(this.adapter);
         this.recycler.setLayoutManager(new LinearLayoutManager(this));
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean isNumberExists = this.holder.checkIfCalcExists(number);
                 if (!isNumberExists)
                 {
-                    //todo: create worker, etc.
+                    calculate(new CalcItem(number), true);
                 }
                 else
                 {
@@ -65,8 +69,29 @@ public class MainActivity extends AppCompatActivity {
         {
             if (!item.status.equals("finished"))
             {
-                //todo: continue calc
+                calculate(item, false);
             }
         }
+    }
+
+    protected void calculate(CalcItem item, boolean newItem)
+    {
+        if (newItem)
+        {
+            this.holder.addCalcItem(item);
+            this.holder.saveItemsList(this.holder.items);
+            this.adapter.notifyDataSetChanged();
+        }
+
+        this.builder.putLong("number", item.getNumToCalc());
+        this.builder.putLong("current_number", item.getCurNumber());
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(CalcWorker.class).setInputData(this.builder.build()).build();
+        item.setWorkerId(request.getId());
+        LiveData<WorkInfo> info = WorkManager.getInstance(getApplicationContext()).getWorkInfoByIdLiveData(request.getId());
+        info.observeForever(v ->
+        {
+
+        });
+
     }
 }

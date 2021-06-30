@@ -11,6 +11,7 @@ public class CalcItem implements Comparable<CalcItem>, Serializable {
     long numToCalc;
     long root1;
     long root2;
+    long curNumber;
     int progress;
     String status;
     boolean isPrime;
@@ -22,6 +23,7 @@ public class CalcItem implements Comparable<CalcItem>, Serializable {
         this.progress = 0;
         this.root1 = -1;
         this.root2 = -1;
+        this.curNumber = 2;
     }
 
     public UUID getGetWorkerId() {
@@ -78,6 +80,17 @@ public class CalcItem implements Comparable<CalcItem>, Serializable {
         this.progress += 1;
     }
 
+    public long getCurNumber() {
+        return curNumber;
+    }
+
+    public void setCurNumber(long curNumber) {
+        this.curNumber = curNumber;
+    }
+
+    public void setWorkerId(UUID workerId) {
+        WorkerId = workerId;
+    }
 
     @Override
     public int compareTo(CalcItem o) {

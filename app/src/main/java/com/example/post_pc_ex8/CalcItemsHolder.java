@@ -19,6 +19,7 @@ public class CalcItemsHolder extends Activity {
 
     public CalcItemsHolder(Context context)
     {
+        this.items = new ArrayList<>();
         this.context = context;
         this.sp = this.context.getSharedPreferences("calc_sp", Context.MODE_PRIVATE);
         initCalcList();
@@ -26,7 +27,6 @@ public class CalcItemsHolder extends Activity {
 
     public void initCalcList()
     {
-        this.items = new ArrayList<>();
         String itemsString = this.sp.getString("list", null);
         if (itemsString != null)
         {
